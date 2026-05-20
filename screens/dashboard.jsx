@@ -90,7 +90,7 @@ function Dashboard() {
         </div>
         <div className="row" style={{gap:6}}>
           <span className="badge green"><span style={{width:6,height:6,borderRadius:"50%",background:"currentColor"}}/> En vivo</span>
-          <span className="badge mono">Tasa {hoy.tasaUsada ? Number(hoy.tasaUsada).toLocaleString("es-PY").replaceAll(",",".") : "—"} Gs</span>
+          <span className="badge mono">Tasa {data.tasaActual ? Number(data.tasaActual).toLocaleString("es-PY").replaceAll(",",".") : "—"} Gs</span>
         </div>
       </div>
 

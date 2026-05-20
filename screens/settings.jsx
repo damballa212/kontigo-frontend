@@ -19,7 +19,7 @@ function Settings({ user }) {
   const initials = displayName.split(" ").map(p => p[0]).slice(0,2).join("").toUpperCase();
   const loginMethod = user?.providerData?.[0]?.providerId === "google.com" ? "Google · OAuth" : "Email / Contraseña";
 
-  const tasa = rateData?.tasa ?? rateData?.tasaActual ?? null;
+  const tasa = rateData?.rate ?? null;
   const tasaFecha = rateData?.fecha ?? rateData?.updatedAt ?? null;
 
   const comisionLabel = (name) => {
