@@ -74,39 +74,53 @@ function TxDetail({ tx, onClose, onDelete }) {
 
           {/* Borrar transacción */}
           <div style={{marginTop:28, paddingTop:16, borderTop:"1px solid var(--border)"}}>
-            {!confirming ? (
-              <button className="btn ghost" style={{color:"var(--danger)", width:"100%", justifyContent:"center"}}
-                onClick={() => setConfirming(true)}>
-                <window.I.Trash2 width="13" height="13"/> Eliminar transacción
-              </button>
-            ) : (
-              <div style={{background:"var(--danger-dim)", border:"1px solid var(--danger)", borderRadius:"var(--radius)", padding:"12px 14px"}}>
-                <div style={{fontSize:13, fontWeight:500, marginBottom:10, color:"var(--danger)"}}>¿Eliminar esta transacción? Esta acción no se puede deshacer.</div>
-                <div className="row" style={{gap:8}}>
-                  <button className="btn" style={{flex:1, justifyContent:"center", background:"var(--danger)", color:"#fff", borderColor:"var(--danger)"}}
-                    disabled={deleting}
-                    onClick={async () => {
-                      setDeleting(true);
-                      try {
-                        await deleteTransaction(tx.rawId);
-                        onDelete(tx.rawId);
-                        onClose();
-                      } catch(e) {
-                        alert("Error al eliminar: " + e.message);
-                        setDeleting(false);
-                      }
-                    }}>
-                    {deleting ? "Eliminando…" : "Sí, eliminar"}
-                  </button>
-                  <button className="btn ghost" style={{flex:1, justifyContent:"center"}} onClick={() => setConfirming(false)}>
-                    Cancelar
-                  </button>
-                </div>
-              </div>
-            )}
+            <button className="btn ghost" style={{color:"var(--danger)", width:"100%", justifyContent:"center"}}
+              onClick={() => setConfirming(true)}>
+              <window.I.Trash2 width="13" height="13"/> Eliminar transacción
+            </button>
           </div>
         </div>
       </div>
+
+      {/* Modal de confirmación centrado */}
+      {confirming && (
+        <div className="dialog-overlay" onClick={() => !deleting && setConfirming(false)}>
+          <div className="dialog" onClick={e => e.stopPropagation()}>
+            <div className="dialog-icon" style={{background:"var(--danger-dim)"}}>
+              <window.I.Trash2 width="20" height="20" style={{color:"var(--danger)"}}/>
+            </div>
+            <div className="dialog-title">Eliminar transacción</div>
+            <div className="dialog-desc">
+              ¿Eliminar <strong>{tx.id}</strong> de <strong>{tx.cliente}</strong>?<br/>
+              Esta acción no se puede deshacer.
+            </div>
+            <div className="dialog-actions">
+              <button
+                className="btn"
+                style={{justifyContent:"center", background:"var(--danger)", color:"#fff", borderColor:"var(--danger)", padding:"10px"}}
+                disabled={deleting}
+                onClick={async () => {
+                  setDeleting(true);
+                  try {
+                    await deleteTransaction(tx.rawId);
+                    onDelete(tx.rawId);
+                    onClose();
+                  } catch(e) {
+                    alert("Error al eliminar: " + e.message);
+                    setDeleting(false);
+                    setConfirming(false);
+                  }
+                }}>
+                {deleting ? "Eliminando…" : "Sí, eliminar"}
+              </button>
+              <button className="btn ghost" style={{justifyContent:"center", padding:"10px"}}
+                disabled={deleting} onClick={() => setConfirming(false)}>
+                Cancelar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }
