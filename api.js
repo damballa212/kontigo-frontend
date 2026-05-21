@@ -70,6 +70,20 @@ async function fetchTransactions({ page = 1, limit = 50, startDate, endDate, col
   return apiJSON(`/transactions?${params}`);
 }
 
+async function fetchWebhookMessages({ page = 1, limit = 50, startDate, endDate, status, parsedType, q } = {}) {
+  const params = new URLSearchParams({ page, limit });
+  if (startDate) params.set("startDate", startDate);
+  if (endDate) params.set("endDate", endDate);
+  if (status) params.set("status", status);
+  if (parsedType) params.set("parsedType", parsedType);
+  if (q) params.set("q", q);
+  return apiJSON(`/webhook/messages?${params}`);
+}
+
+async function fetchWebhookMessage(id) {
+  return apiJSON(`/webhook/messages/${id}`);
+}
+
 async function fetchRates() {
   return apiJSON("/rates/current");
 }
@@ -191,6 +205,7 @@ window.KONTIGO = {
   COLABS: COLABS_REF,
   // API
   fetchDashboard, fetchTransactions, fetchRates, fetchCollaborators,
+  fetchWebhookMessages, fetchWebhookMessage,
   fetchExportPreview, fetchExportPresets, saveExportPreset, deleteExportPreset,
   downloadExport, mapTransaction, deleteTransaction,
 };

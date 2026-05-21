@@ -38,6 +38,7 @@ function Sidebar({ screen, setScreen, onLogout, user }) {
     { id: "transactions", label: "Transacciones", icon: window.I.List },
     { id: "reports",      label: "Reportes",      icon: window.I.Report },
     { id: "settings",     label: "Configuración", icon: window.I.Settings },
+    { id: "bot",          label: "Bot WhatsApp",  icon: window.I.WhatsApp },
   ];
 
   const displayName = user?.displayName || "Usuario";
@@ -65,13 +66,6 @@ function Sidebar({ screen, setScreen, onLogout, user }) {
             </div>
           );
         })}
-
-        <div className="nav-section">Atajos</div>
-        <div className="nav-item">
-          <window.I.WhatsApp className="ico"/>
-          <span>Bot WhatsApp</span>
-          <span className="badge green" style={{marginLeft:"auto", padding:"1px 6px"}}>on</span>
-        </div>
       </nav>
 
       <div className="sidebar-footer">
@@ -98,6 +92,7 @@ function MobileTabs({ screen, setScreen }) {
     { id: "dashboard",    label: "Inicio",   icon: window.I.Dashboard },
     { id: "transactions", label: "Movs",     icon: window.I.List },
     { id: "reports",      label: "Reportes", icon: window.I.Report },
+    { id: "bot",          label: "Bot",      icon: window.I.WhatsApp },
     { id: "settings",     label: "Config",   icon: window.I.Settings },
   ];
   return (
@@ -178,6 +173,7 @@ function App() {
     dashboard:    { t: "Dashboard",       s: "Métricas del negocio" },
     transactions: { t: "Transacciones",   s: "Historial completo de operaciones" },
     reports:      { t: "Reportes",        s: "Exportá datos filtrados" },
+    bot:          { t: "Bot WhatsApp",     s: "Mensajes entrantes y estado del flujo" },
     settings:     { t: "Configuración",   s: "Tasas, colaboradores y cuenta" },
   };
 
@@ -211,6 +207,7 @@ function App() {
     dashboard:    window.Dashboard,
     transactions: window.Transactions,
     reports:      window.Reports,
+    bot:          window.BotWhatsApp,
     settings:     window.Settings,
   }[screen];
 
@@ -249,6 +246,7 @@ function App() {
             {value:"dashboard",    label:"Dashboard"},
             {value:"transactions", label:"Transacciones"},
             {value:"reports",      label:"Reportes"},
+            {value:"bot",          label:"Bot WhatsApp"},
             {value:"settings",     label:"Configuración"},
           ]}/>
         </TweakSection>

@@ -495,7 +495,7 @@ body {
   z-index: 20;
 }
 @media (max-width: 900px) {
-  .mobile-tabs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; }
+  .mobile-tabs { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; }
   .main { padding-bottom: 60px; }
 }
 .mobile-tab {
