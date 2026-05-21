@@ -1,5 +1,5 @@
 // ===== Kontigo · Transactions screen =====
-const { fetchTransactions, mapTransaction, fmtUSD: fU, fmtGs: fG, fmtDate: fD, colabBy: cBy, downloadExport, COLABS } = window.KONTIGO;
+const { fetchTransactions, mapTransaction, fmtUSD: fU, fmtGs: fG, fmtDate: fD, colabBy: cBy, COLABS } = window.KONTIGO;
 
 function TxDetail({ tx, onClose }) {
   if (!tx) return null;
@@ -129,15 +129,6 @@ function Transactions() {
     setPage(p);
   }
 
-  const [exporting, setExporting] = React.useState(false);
-  async function handleExport(format) {
-    setExporting(true);
-    try {
-      await downloadExport({ format, startDate: applied.dateFrom, endDate: applied.dateTo, colaborador: applied.colabFilter || undefined });
-    } catch(e) { alert("Error al exportar: " + e.message); }
-    finally { setExporting(false); }
-  }
-
   const txs = result?.data || [];
   const pagination = result?.pagination;
   const totalUsd = txs.reduce((s,t) => s + t.usd, 0);
@@ -180,25 +171,16 @@ function Transactions() {
         </div>
       </div>
 
-      {/* Header + exports */}
-      <div className="row between" style={{marginBottom:14}}>
-        <div>
-          <div style={{fontSize:14, fontWeight:600}}>
-            {loading ? "Cargando…" : `${pagination?.total ?? txs.length} transacciones`}
+      {/* Header */}
+      <div style={{marginBottom:14}}>
+        <div style={{fontSize:14, fontWeight:600}}>
+          {loading ? "Cargando…" : `${pagination?.total ?? txs.length} transacciones`}
+        </div>
+        {!loading && txs.length > 0 && (
+          <div className="page-sub">
+            Página: ${totalUsd.toLocaleString("en-US", {minimumFractionDigits:2})} · {fG(totalGs)} Gs
           </div>
-          {!loading && txs.length > 0 && (
-            <div className="page-sub">
-              Página: ${totalUsd.toLocaleString("en-US", {minimumFractionDigits:2})} · {fG(totalGs)} Gs
-            </div>
-          )}
-        </div>
-        <div className="row" style={{gap:6}}>
-          {["csv","excel","pdf"].map(fmt => (
-            <button key={fmt} className="btn" onClick={() => handleExport(fmt)} disabled={exporting}>
-              <window.I.Download width="13" height="13"/> {fmt.toUpperCase()}
-            </button>
-          ))}
-        </div>
+        )}
       </div>
 
       {error && (
