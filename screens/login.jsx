@@ -44,7 +44,7 @@ function Login({ onEnter }) {
         <div className="brand" style={{padding: 0}}>
           <span className="brand-mark">K</span>
           <div>
-            <div className="brand-name">Kontigo</div>
+            <div className="brand-name">Kapital</div>
             <div className="brand-sub">Casa de cambios · Paraguay</div>
           </div>
         </div>
@@ -102,7 +102,7 @@ function Login({ onEnter }) {
           <div className="field">
             <label className="field-label">Email</label>
             <input className="input" type="email" value={email} onChange={e=>setEmail(e.target.value)}
-              placeholder="gabriel@kontigo.py" style={{padding:"9px 12px"}}
+              placeholder="gabriel@kapital.py" style={{padding:"9px 12px"}}
               onKeyDown={e => e.key === "Enter" && loginWithEmail()}/>
           </div>
           <div className="field">

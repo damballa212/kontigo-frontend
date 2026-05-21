@@ -48,7 +48,7 @@ function Sidebar({ screen, setScreen, onLogout, user }) {
       <div className="brand">
         <span className="brand-mark">K</span>
         <div>
-          <div className="brand-name">Kontigo</div>
+          <div className="brand-name">Kapital</div>
           <div className="brand-sub">Casa de cambios</div>
         </div>
       </div>
