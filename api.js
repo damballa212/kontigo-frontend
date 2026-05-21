@@ -78,12 +78,47 @@ async function fetchCollaborators() {
   return apiJSON("/collaborators");
 }
 
+async function fetchExportPreview({ startDate, endDate, colaborador, cliente, minAmount, maxAmount } = {}) {
+  const params = new URLSearchParams();
+  if (startDate) params.set("startDate", startDate);
+  if (endDate)   params.set("endDate", endDate);
+  if (colaborador) params.set("colaborador", colaborador);
+  if (cliente)   params.set("cliente", cliente);
+  if (minAmount) params.set("minAmount", minAmount);
+  if (maxAmount) params.set("maxAmount", maxAmount);
+  return apiJSON(`/export/preview?${params}`);
+}
+
+async function fetchExportPresets() {
+  return apiJSON("/export/presets");
+}
+
+async function saveExportPreset(name, config) {
+  return apiJSON("/export/presets", {
+    method: "POST",
+    body: JSON.stringify({ name, config }),
+  });
+}
+
+async function deleteExportPreset(id) {
+  const token = await getToken();
+  const base = window.KONTIGO_CONFIG.API_BASE_URL;
+  await fetch(`${base}/export/presets/${id}`, {
+    method: "DELETE",
+    headers: { "Authorization": `Bearer ${token}` },
+  });
+}
+
 // Descarga un archivo del backend y dispara la descarga en el browser
-async function downloadExport({ format, startDate, endDate, colaborador }) {
+async function downloadExport({ format, startDate, endDate, colaborador, cliente, minAmount, maxAmount, fields }) {
   const params = new URLSearchParams({ format });
   if (startDate) params.set("startDate", startDate);
-  if (endDate) params.set("endDate", endDate);
+  if (endDate)   params.set("endDate", endDate);
   if (colaborador) params.set("colaborador", colaborador);
+  if (cliente)   params.set("cliente", cliente);
+  if (minAmount) params.set("minAmount", minAmount);
+  if (maxAmount) params.set("maxAmount", maxAmount);
+  if (fields && fields.length) params.set("fields", fields.join(","));
 
   const res = await apiFetch(`/export?${params}`);
   const blob = await res.blob();
@@ -142,8 +177,9 @@ window.KONTIGO = {
   fmtUSD, fmtGs, fmtNum, fmtDate, colabBy,
   COLABS: COLABS_REF,
   // API
-  fetchDashboard, fetchTransactions, fetchRates, fetchCollaborators, downloadExport,
-  mapTransaction,
+  fetchDashboard, fetchTransactions, fetchRates, fetchCollaborators,
+  fetchExportPreview, fetchExportPresets, saveExportPreset, deleteExportPreset,
+  downloadExport, mapTransaction,
 };
 
 })();
