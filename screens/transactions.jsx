@@ -1,7 +1,9 @@
-// ===== Kontigo · Transactions screen =====
-const { fetchTransactions, mapTransaction, fmtUSD: fU, fmtGs: fG, fmtDate: fD, colabBy: cBy, COLABS } = window.KONTIGO;
+// ===== Kapital · Transactions screen =====
+const { fetchTransactions, mapTransaction, deleteTransaction, fmtUSD: fU, fmtGs: fG, fmtDate: fD, colabBy: cBy, COLABS } = window.KONTIGO;
 
-function TxDetail({ tx, onClose }) {
+function TxDetail({ tx, onClose, onDelete }) {
+  const [confirming, setConfirming] = React.useState(false);
+  const [deleting,   setDeleting]   = React.useState(false);
   if (!tx) return null;
   const colab = cBy(tx.colab);
   return (
@@ -69,6 +71,40 @@ function TxDetail({ tx, onClose }) {
               <span className="kv-val">{fU(tx.comGabriel, true)} <span className="muted">· {fG(tx.comGabriel * tx.tasa)} Gs</span></span>
             </div>
           </div>
+
+          {/* Borrar transacción */}
+          <div style={{marginTop:28, paddingTop:16, borderTop:"1px solid var(--border)"}}>
+            {!confirming ? (
+              <button className="btn ghost" style={{color:"var(--danger)", width:"100%", justifyContent:"center"}}
+                onClick={() => setConfirming(true)}>
+                <window.I.Trash2 width="13" height="13"/> Eliminar transacción
+              </button>
+            ) : (
+              <div style={{background:"var(--danger-dim)", border:"1px solid var(--danger)", borderRadius:"var(--radius)", padding:"12px 14px"}}>
+                <div style={{fontSize:13, fontWeight:500, marginBottom:10, color:"var(--danger)"}}>¿Eliminar esta transacción? Esta acción no se puede deshacer.</div>
+                <div className="row" style={{gap:8}}>
+                  <button className="btn" style={{flex:1, justifyContent:"center", background:"var(--danger)", color:"#fff", borderColor:"var(--danger)"}}
+                    disabled={deleting}
+                    onClick={async () => {
+                      setDeleting(true);
+                      try {
+                        await deleteTransaction(tx.rawId);
+                        onDelete(tx.rawId);
+                        onClose();
+                      } catch(e) {
+                        alert("Error al eliminar: " + e.message);
+                        setDeleting(false);
+                      }
+                    }}>
+                    {deleting ? "Eliminando…" : "Sí, eliminar"}
+                  </button>
+                  <button className="btn ghost" style={{flex:1, justifyContent:"center"}} onClick={() => setConfirming(false)}>
+                    Cancelar
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </>
@@ -127,6 +163,14 @@ function Transactions() {
   function goToPage(p) {
     setApplied(prev => ({ ...prev, page: p }));
     setPage(p);
+  }
+
+  function handleDelete(rawId) {
+    setResult(prev => prev ? {
+      ...prev,
+      data: prev.data.filter(t => t.rawId !== rawId),
+      pagination: prev.pagination ? { ...prev.pagination, total: prev.pagination.total - 1 } : prev.pagination,
+    } : prev);
   }
 
   const txs = result?.data || [];
@@ -249,7 +293,7 @@ function Transactions() {
         )}
       </div>
 
-      {selected && <TxDetail tx={selected} onClose={() => setSelected(null)}/>}
+      {selected && <TxDetail tx={selected} onClose={() => setSelected(null)} onDelete={handleDelete}/>}
     </div>
   );
 }

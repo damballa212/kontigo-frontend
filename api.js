@@ -109,6 +109,19 @@ async function deleteExportPreset(id) {
   });
 }
 
+async function deleteTransaction(id) {
+  const token = await getToken();
+  const base = window.KONTIGO_CONFIG.API_BASE_URL;
+  const res = await fetch(`${base}/transactions/${id}`, {
+    method: "DELETE",
+    headers: { "Authorization": `Bearer ${token}` },
+  });
+  if (!res.ok && res.status !== 204) {
+    const msg = await res.text().catch(() => res.statusText);
+    throw new Error(`API ${res.status}: ${msg}`);
+  }
+}
+
 // Descarga un archivo del backend y dispara la descarga en el browser
 async function downloadExport({ format, startDate, endDate, colaborador, cliente, minAmount, maxAmount, fields }) {
   const params = new URLSearchParams({ format });
@@ -179,7 +192,7 @@ window.KONTIGO = {
   // API
   fetchDashboard, fetchTransactions, fetchRates, fetchCollaborators,
   fetchExportPreview, fetchExportPresets, saveExportPreset, deleteExportPreset,
-  downloadExport, mapTransaction,
+  downloadExport, mapTransaction, deleteTransaction,
 };
 
 })();
