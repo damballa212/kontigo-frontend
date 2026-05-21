@@ -116,6 +116,31 @@ function MobileTabs({ screen, setScreen }) {
   );
 }
 
+function ToastContainer() {
+  const [toasts, setToasts] = React.useState([]);
+
+  React.useEffect(() => {
+    window.showToast = (message, type = "success") => {
+      const id = Date.now();
+      setToasts(prev => [...prev, { id, message, type }]);
+      setTimeout(() => setToasts(prev => prev.filter(t => t.id !== id)), 3500);
+    };
+  }, []);
+
+  if (!toasts.length) return null;
+  return (
+    <div style={{position:"fixed", bottom:24, right:24, zIndex:200, display:"flex", flexDirection:"column", gap:8}}>
+      {toasts.map(t => (
+        <div key={t.id} className={`toast toast-${t.type}`}>
+          {t.type === "success" && <window.I.Check width="14" height="14"/>}
+          {t.type === "error"   && <window.I.X    width="14" height="14"/>}
+          <span>{t.message}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 function App() {
   const [tweaks, setTweak] = useTweaks(TWEAK_DEFAULTS);
   const [theme, setTheme] = React.useState(() => localStorage.getItem("kontigo-theme") || "dark");
@@ -228,6 +253,7 @@ function App() {
           ]}/>
         </TweakSection>
       </TweaksPanel>
+      <ToastContainer/>
     </>
   );
 }

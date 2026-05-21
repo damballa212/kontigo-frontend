@@ -384,6 +384,20 @@ body {
 .dialog-desc  { font-size: 13px; color: var(--text-muted); text-align: center; line-height: 1.5; margin-bottom: 22px; }
 .dialog-actions { display: flex; flex-direction: column; gap: 8px; }
 
+/* Toast notifications */
+.toast {
+  display: flex; align-items: center; gap: 9px;
+  padding: 11px 16px;
+  border-radius: var(--radius);
+  font-size: 13px; font-weight: 500;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+  animation: toast-in 0.2s ease-out;
+  min-width: 220px; max-width: 340px;
+}
+@keyframes toast-in { from { transform: translateY(12px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+.toast-success { background: var(--accent-dim); border: 1px solid var(--accent); color: var(--accent); }
+.toast-error   { background: var(--danger-dim); border: 1px solid var(--danger); color: var(--danger); }
+
 /* Theme toggle */
 .theme-toggle {
   display: inline-flex;

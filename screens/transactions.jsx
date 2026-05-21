@@ -105,8 +105,9 @@ function TxDetail({ tx, onClose, onDelete }) {
                     await deleteTransaction(tx.rawId);
                     onDelete(tx.rawId);
                     onClose();
+                    window.showToast?.(`Transacción ${tx.id} eliminada`);
                   } catch(e) {
-                    alert("Error al eliminar: " + e.message);
+                    window.showToast?.("Error al eliminar: " + e.message, "error");
                     setDeleting(false);
                     setConfirming(false);
                   }
