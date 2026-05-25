@@ -6,6 +6,7 @@ import {
   downloadExport, fetchExportPreview, fetchExportPresets, saveExportPreset, deleteExportPreset,
   COLABS,
 } from '../api.js'
+import { getDatePresets } from '../utils/datePresets.js'
 
 const ALL_FIELDS = [
   { key: "id",                  label: "ID" },
@@ -109,18 +110,7 @@ function Reports() {
   }
 
   function applyDatePreset(f, t) { setFrom(f); setTo(t); }
-  const now = new Date();
-  const lm1 = new Date(now.getFullYear(), now.getMonth()-1, 1).toISOString().split("T")[0];
-  const lm2 = new Date(now.getFullYear(), now.getMonth(),   0).toISOString().split("T")[0];
-  const d90 = new Date(now - 90*864e5).toISOString().split("T")[0];
-  const mon = new Date(now); mon.setDate(now.getDate() - now.getDay() + 1);
-  const datePresets = [
-    ["Hoy",            today,                        today],
-    ["Esta semana",    mon.toISOString().split("T")[0], today],
-    ["Mes actual",     firstDay,                     today],
-    ["Mes pasado",     lm1,                          lm2],
-    ["Últimos 90 días",d90,                          today],
-  ];
+  const datePresets = getDatePresets();
 
   return (
     <div className="content">
