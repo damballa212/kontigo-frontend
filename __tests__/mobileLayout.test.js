@@ -48,4 +48,13 @@ describe('mobile layout safeguards', () => {
     expect(reports).toContain('reports-preview')
     expect(reports).not.toContain('position:"sticky"')
   })
+
+  it('uses mobile-native dashboard layout classes instead of fixed split grids', () => {
+    const dashboard = read('screens/dashboard.jsx')
+    expect(dashboard).toContain('dashboard-overview-grid')
+    expect(dashboard).toContain('dashboard-chart-grid')
+    expect(dashboard).toContain('dashboard-performance-table')
+    expect(dashboard).toContain('optional-col')
+    expect(dashboard).not.toContain('gridTemplateColumns:"2fr 1fr"')
+  })
 })

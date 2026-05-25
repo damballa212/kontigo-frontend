@@ -488,13 +488,20 @@ body {
 
 /* Compact mobile tables */
 .transactions-table,
-.collaborators-table {
+.collaborators-table,
+.dashboard-performance-table {
   table-layout: auto;
 }
 .transactions-table .tx-col-client,
 .transactions-table .tx-col-collab,
-.collaborators-table td:first-child {
+.collaborators-table td:first-child,
+.dashboard-performance-table td:first-child {
   overflow-wrap: anywhere;
+}
+
+/* Dashboard */
+.dashboard-chart-grid {
+  grid-template-columns: 2fr 1fr;
 }
 
 /* Reports */
@@ -579,25 +586,30 @@ body {
   .kv { gap: 12px; align-items: flex-start; }
   .kv-val { text-align: right; overflow-wrap: anywhere; }
   .transactions-table,
-  .collaborators-table {
+  .collaborators-table,
+  .dashboard-performance-table {
     table-layout: fixed;
     min-width: 0;
   }
   .transactions-table th,
   .transactions-table td,
   .collaborators-table th,
-  .collaborators-table td {
+  .collaborators-table td,
+  .dashboard-performance-table th,
+  .dashboard-performance-table td {
     padding: 12px 8px;
     font-size: 12.5px;
     vertical-align: middle;
   }
   .transactions-table th,
-  .collaborators-table th {
+  .collaborators-table th,
+  .dashboard-performance-table th {
     font-size: 10.5px;
     letter-spacing: 0.06em;
   }
   .transactions-table .optional-col,
-  .collaborators-table .optional-col {
+  .collaborators-table .optional-col,
+  .dashboard-performance-table .optional-col {
     display: none;
   }
   .transactions-table .tx-col-date { width: 24%; }
@@ -605,18 +617,21 @@ body {
   .transactions-table .tx-col-collab { width: 28%; }
   .transactions-table .tx-col-usd { width: 24%; }
   .transactions-table .avatar,
-  .collaborators-table .avatar {
+  .collaborators-table .avatar,
+  .dashboard-performance-table .avatar {
     width: 24px;
     height: 24px;
     font-size: 10px;
     flex-shrink: 0;
   }
   .transactions-table .row,
-  .collaborators-table .row {
+  .collaborators-table .row,
+  .dashboard-performance-table .row {
     gap: 6px!important;
   }
   .transactions-table .num,
-  .collaborators-table .num {
+  .collaborators-table .num,
+  .dashboard-performance-table .num {
     white-space: nowrap;
   }
   .transactions-table .badge,
@@ -632,6 +647,49 @@ body {
   .collaborators-table td:nth-child(3) { width: 18%; }
   .collaborators-table th:nth-child(4),
   .collaborators-table td:nth-child(4) { width: 20%; }
+  .dashboard-overview-grid.grid-4,
+  .dashboard-overview-grid.grid-3 {
+    grid-template-columns: 1fr;
+  }
+  .dashboard-overview-grid .metric-value {
+    font-size: 32px;
+    overflow-wrap: anywhere;
+  }
+  .dashboard-chart-grid {
+    grid-template-columns: 1fr;
+  }
+  .dashboard-chart-grid .card-header {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+  .dashboard-chart-grid .card-header > .row {
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    font-size: 10.5px!important;
+  }
+  .chart {
+    height: 180px;
+    gap: 3px;
+  }
+  .chart-x {
+    font-size: 10px;
+  }
+  .client-row {
+    grid-template-columns: 22px minmax(0, 1fr) auto;
+    gap: 10px;
+  }
+  .client-row > span:nth-child(3) {
+    display: none;
+  }
+  .client-name {
+    overflow-wrap: anywhere;
+  }
+  .dashboard-performance-table th:nth-child(1),
+  .dashboard-performance-table td:nth-child(1) { width: 44%; }
+  .dashboard-performance-table th:nth-child(2),
+  .dashboard-performance-table td:nth-child(2) { width: 24%; }
+  .dashboard-performance-table th:nth-child(3),
+  .dashboard-performance-table td:nth-child(3) { width: 32%; }
   .reports-field-grid,
   .reports-format-grid { grid-template-columns: 1fr; }
   .reports-column-header,

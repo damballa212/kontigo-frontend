@@ -95,7 +95,7 @@ function Dashboard() {
         </div>
       </div>
 
-      <div className="grid grid-4" style={{marginBottom:18}}>
+      <div className="grid grid-4 dashboard-overview-grid" style={{marginBottom:18}}>
         <Metric label="Transacciones" tone="green" value={hoy.totalTransacciones} sub="hoy"/>
         <Metric label="USD movido" tone="gold" value={fmtUSD(hoy.totalUsd, true)} sub="hoy"/>
         <Metric label="Gs entregados" value={fmtGs(hoy.totalGs)} unit=" Gs" sub="hoy"/>
@@ -108,14 +108,14 @@ function Dashboard() {
           Mes actual · {mesNombre}
         </div>
       </div>
-      <div className="grid grid-3" style={{marginBottom:18}}>
+      <div className="grid grid-3 dashboard-overview-grid" style={{marginBottom:18}}>
         <Metric label="Transacciones del mes" tone="green" value={mes.totalTransacciones} sub="este mes"/>
         <Metric label="USD movido este mes" tone="gold" value={fmtUSD(mes.totalUsd, true)} sub="este mes"/>
         <Metric label="Comisión Gabriel · Mes" tone="gold" value={fmtUSD(mes.comisionGabrielUsd, true)} sub="todas las fuentes"/>
       </div>
 
       {/* Chart + Top clientes */}
-      <div className="grid grid-2" style={{gridTemplateColumns:"2fr 1fr", marginBottom:18}}>
+      <div className="grid dashboard-chart-grid" style={{marginBottom:18}}>
         <div className="card flush">
           <div className="card-header">
             <div>
@@ -164,14 +164,14 @@ function Dashboard() {
             <div className="card-sub">Mes actual · ordenado por USD movido</div>
           </div>
         </div>
-        <table className="table">
+        <div className="table-scroll"><table className="table dashboard-performance-table">
           <thead>
             <tr>
               <th>Colaborador</th>
               <th className="num">Transacciones</th>
               <th className="num">USD movido</th>
-              <th className="num">Comisión USD</th>
-              <th>Participación</th>
+              <th className="num optional-col">Comisión USD</th>
+              <th className="optional-col">Participación</th>
             </tr>
           </thead>
           <tbody>
@@ -188,12 +188,12 @@ function Dashboard() {
                   </td>
                   <td className="num">{c.totalTransacciones}</td>
                   <td className="num">{fmtUSD(c.totalUsd, true)}</td>
-                  <td className="num">
+                  <td className="num optional-col">
                     <span style={{color: Number(c.comisionUsd) > 0 ? "var(--accent)" : "var(--text-dim)"}}>
                       {Number(c.comisionUsd) > 0 ? fmtUSD(c.comisionUsd, true) : "—"}
                     </span>
                   </td>
-                  <td>
+                  <td className="optional-col">
                     <div className="row" style={{gap:8}}>
                       <div style={{width:120, height:5, background:"var(--surface-2)", borderRadius:99, overflow:"hidden"}}>
                         <div style={{width:`${share}%`, height:"100%", background:"var(--accent)"}}/>
@@ -205,7 +205,7 @@ function Dashboard() {
               );
             })}
           </tbody>
-        </table>
+        </table></div>
       </div>
     </div>
   );
