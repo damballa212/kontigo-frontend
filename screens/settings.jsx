@@ -173,7 +173,7 @@ function Settings({ user }) {
             <I.Plus width="13" height="13"/> Nuevo
           </button>
         </div>
-        <div className="table-scroll"><table className="table">
+        <div className="table-scroll desktop-only"><table className="table">
           <thead>
             <tr>
               <th>Nombre</th>
@@ -221,6 +221,44 @@ function Settings({ user }) {
             })}
           </tbody>
         </table></div>
+        <div className="mobile-card-list collaborator-mobile-list">
+          {colabs == null && (
+            <div className="muted tiny" style={{textAlign:"center", padding:18}}>Cargando…</div>
+          )}
+          {colabs && colabs.length === 0 && (
+            <div className="muted tiny" style={{textAlign:"center", padding:18}}>Sin colaboradores registrados</div>
+          )}
+          {colabs && colabs.map((c) => {
+            const name = c.name || "—";
+            const initials2 = name.split(" ").map(p => p[0]).slice(0,2).join("").toUpperCase();
+            const txCount = c.txCount ?? "—";
+            const active = (c.status || 'active') === 'active';
+            return (
+              <button key={c.id} className="collaborator-card" onClick={() => openEdit(c)} style={{textAlign:"left", color:"inherit", cursor:"pointer"}}>
+                <div className="collaborator-card-head">
+                  <div className="collaborator-card-person">
+                    <span className="avatar">{initials2}</span>
+                    <div className="collaborator-card-name">{name}</div>
+                  </div>
+                  {active
+                    ? <span className="badge green"><span style={{width:5,height:5,borderRadius:"50%",background:"currentColor"}}/> Activo</span>
+                    : <span className="badge" style={{opacity:0.5}}>Inactivo</span>
+                  }
+                </div>
+                <div className="collaborator-card-stats">
+                  <div className="mobile-stat">
+                    <span className="muted tiny">Comisión base</span>
+                    <strong className="mono">{pctLabel(c)}</strong>
+                  </div>
+                  <div className="mobile-stat">
+                    <span className="muted tiny">Transacciones</span>
+                    <strong className="mono">{txCount}</strong>
+                  </div>
+                </div>
+              </button>
+            );
+          })}
+        </div>
       </div>
 
       {/* Cuenta */}

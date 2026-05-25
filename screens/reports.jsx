@@ -186,14 +186,14 @@ function Reports() {
           </div>
 
           <div className="card" style={{padding:18}}>
-            <div className="row between" style={{marginBottom:10}}>
+            <div className="reports-column-header">
               <div className="card-title" style={{fontSize:13}}>2 · Columnas a incluir</div>
               <div className="row" style={{gap:6}}>
                 <button className="btn ghost" style={{fontSize:11, padding:"3px 8px"}} onClick={selectDefaultFields}>Por defecto</button>
                 <button className="btn ghost" style={{fontSize:11, padding:"3px 8px"}} onClick={selectAllFields}>Todas</button>
               </div>
             </div>
-            <div style={{display:"grid", gridTemplateColumns:"1fr 1fr", gap:"6px 12px"}}>
+            <div className="reports-field-grid">
               {ALL_FIELDS.map(f => (
                 <label key={f.key} style={{display:"flex", alignItems:"center", gap:8, cursor:"pointer", fontSize:13}}>
                   <input type="checkbox" checked={fields.includes(f.key)} onChange={() => toggleField(f.key)}
@@ -206,10 +206,10 @@ function Reports() {
 
           <div className="card" style={{padding:18}}>
             <div className="card-title" style={{fontSize:13, marginBottom:12}}>3 · Formato</div>
-            <div className="row" style={{gap:8, marginBottom:16}}>
+            <div className="reports-format-grid">
               {[["csv","CSV","Texto plano"],["excel","Excel","3 hojas + totales"],["pdf","PDF","Profesional"]].map(([k, name, sub]) => (
-                <button key={k} className="btn" onClick={() => setFmt(k)}
-                  style={{flexDirection:"column", alignItems:"flex-start", padding:"10px 14px", flex:1, gap:2,
+                <button key={k} className="btn reports-format-option" onClick={() => setFmt(k)}
+                  style={{
                     background: fmt===k ? "var(--accent-dim)" : "var(--surface)",
                     borderColor: fmt===k ? "var(--accent)"    : "var(--border)",
                     color:       fmt===k ? "var(--accent)"    : "var(--text)"}}>
@@ -218,7 +218,7 @@ function Reports() {
                 </button>
               ))}
             </div>
-            <div className="row" style={{gap:8}}>
+            <div className="reports-action-row">
               <button className="btn primary" onClick={handleDownload} disabled={loading || !fields.length}
                 style={{flex:1, justifyContent:"center", padding:"10px 14px", fontSize:14, opacity: loading ? 0.7 : 1}}>
                 <I.Download width="14" height="14"/> {loading ? "Generando…" : "Descargar reporte"}
@@ -231,7 +231,7 @@ function Reports() {
         </div>
 
         {/* ── Columna derecha: preview real ── */}
-        <div className="card flush" style={{position:"sticky", top:18}}>
+        <div className="card flush reports-preview">
           <div className="card-header">
             <div>
               <div className="card-title">Vista previa</div>
