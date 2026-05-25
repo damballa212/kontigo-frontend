@@ -1,16 +1,19 @@
 // ===== Kontigo · Settings screen =====
 function Settings({ user }) {
-  const { fmtUSD, fetchRates, fetchCollaborators } = window.KONTIGO;
+  const { fmtUSD, fetchRates, fetchCollaborators, createCollaborator, updateCollaborator, deleteCollaborator } = window.KONTIGO;
   const [rateData, setRateData] = React.useState(null);
   const [colabs, setColabs] = React.useState(null);
   const [error, setError] = React.useState(null);
 
+  // Modal state
+  const [modal, setModal] = React.useState(null); // null | { mode: 'create' } | { mode: 'edit', colab: {} }
+  const [form, setForm] = React.useState({ name: '', basePct: '', status: 'active' });
+  const [saving, setSaving] = React.useState(false);
+  const [formError, setFormError] = React.useState(null);
+
   React.useEffect(() => {
     Promise.all([fetchRates(), fetchCollaborators()])
-      .then(([r, c]) => {
-        setRateData(r);
-        setColabs(c);
-      })
+      .then(([r, c]) => { setRateData(r); setColabs(c); })
       .catch(e => setError(e.message));
   }, []);
 
@@ -22,12 +25,72 @@ function Settings({ user }) {
   const tasa = rateData?.rate ?? null;
   const tasaFecha = rateData?.fecha ?? rateData?.updatedAt ?? null;
 
-  const comisionLabel = (name) => {
-    const n = (name || "").toLowerCase();
-    if (n.includes("gabriel") || n.includes("gabo")) return "Recibe el 100% cuando no hay colaborador";
-    if (n.includes("patty") || n.includes("paty")) return "Siempre 5%";
-    if (n.includes("anael") || n.includes("anel")) return "2% si comisión = 10% · 5% si 13% o 15%";
-    return "Según override_pct registrado";
+  function openCreate() {
+    setForm({ name: '', basePct: '', status: 'active' });
+    setFormError(null);
+    setModal({ mode: 'create' });
+  }
+
+  function openEdit(colab) {
+    setForm({
+      name: colab.name,
+      basePct: colab.basePctUsdTotal != null ? String(colab.basePctUsdTotal) : '',
+      status: colab.status || 'active',
+    });
+    setFormError(null);
+    setModal({ mode: 'edit', colab });
+  }
+
+  function closeModal() {
+    setModal(null);
+    setFormError(null);
+  }
+
+  async function handleSave() {
+    if (!form.name.trim()) { setFormError('El nombre es requerido'); return; }
+    const basePct = form.basePct !== '' ? parseFloat(form.basePct) : null;
+    if (basePct !== null && (isNaN(basePct) || basePct < 0 || basePct > 100)) {
+      setFormError('El porcentaje debe estar entre 0 y 100');
+      return;
+    }
+    setSaving(true);
+    setFormError(null);
+    try {
+      if (modal.mode === 'create') {
+        const nuevo = await createCollaborator({ name: form.name.trim(), basePct, status: form.status });
+        setColabs(prev => [...(prev || []), nuevo].sort((a, b) => a.name.localeCompare(b.name)));
+      } else {
+        const updated = await updateCollaborator(modal.colab.id, { name: form.name.trim(), basePct, status: form.status });
+        setColabs(prev => prev.map(c => c.id === modal.colab.id ? updated : c));
+      }
+      closeModal();
+      window.showToast?.('Colaborador guardado');
+    } catch (e) {
+      setFormError(e.message || 'Error al guardar');
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function handleDelete() {
+    if (!window.confirm(`¿Eliminar "${modal.colab.name}"? Esta acción no se puede deshacer.`)) return;
+    setSaving(true);
+    try {
+      await deleteCollaborator(modal.colab.id);
+      setColabs(prev => prev.filter(c => c.id !== modal.colab.id));
+      closeModal();
+      window.showToast?.('Colaborador eliminado');
+    } catch (e) {
+      setFormError(e.message || 'Error al eliminar');
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  const pctLabel = (colab) => {
+    if (colab.basePctUsdTotal === null || colab.basePctUsdTotal === undefined) return 'Variable (override)';
+    if (colab.basePctUsdTotal === 0) return 'Recibe el resto (dueño)';
+    return `${colab.basePctUsdTotal}%`;
   };
 
   return (
@@ -63,7 +126,6 @@ function Settings({ user }) {
               )}
             </>
           )}
-
           <div className="card" style={{padding:14, background:"var(--bg-soft)", border:"1px dashed var(--border-strong)"}}>
             <div className="row" style={{gap:10, alignItems:"flex-start"}}>
               <window.I.WhatsApp width="18" height="18" style={{color:"var(--accent)", flexShrink:0, marginTop:2}}/>
@@ -83,8 +145,6 @@ function Settings({ user }) {
             {[
               ["#TRANSACCION", "Registrar una nueva transacción"],
               ["#TASA", "Actualizar la tasa USD → Gs"],
-              ["#HOY", "Resumen rápido del día"],
-              ["#YO", "Tus comisiones del mes"],
               ["#AYUDA", "Listado de comandos"],
             ].map(([cmd, desc]) => (
               <div key={cmd} className="row between" style={{padding:"10px 12px", background:"var(--bg-soft)", borderRadius:"var(--radius-sm)", border:"1px solid var(--border)"}}>
@@ -103,35 +163,53 @@ function Settings({ user }) {
             <div className="card-title">Colaboradores</div>
             <div className="card-sub">Personas autorizadas a registrar transacciones</div>
           </div>
+          <button className="btn sm" onClick={openCreate} style={{flexShrink:0}}>
+            <window.I.Plus width="13" height="13"/> Nuevo
+          </button>
         </div>
         <table className="table">
           <thead>
             <tr>
               <th>Nombre</th>
-              <th>Reglas de comisión</th>
-              <th className="num">Transacciones totales</th>
+              <th>Comisión base</th>
+              <th className="num">Transacciones</th>
               <th>Estado</th>
+              <th/>
             </tr>
           </thead>
           <tbody>
             {colabs == null && (
-              <tr><td colSpan={4} style={{textAlign:"center", padding:24, color:"var(--text-muted)"}}>Cargando…</td></tr>
+              <tr><td colSpan={5} style={{textAlign:"center", padding:24, color:"var(--text-muted)"}}>Cargando…</td></tr>
             )}
-            {colabs && colabs.map((c, i) => {
-              const name = c.colaborador || c.nombre || c.name || "—";
-              const initials2 = name.split(" ").map(p => p[0]).slice(0,2).join("");
-              const txCount = c.totalTransacciones ?? c.txCount ?? "—";
+            {colabs && colabs.length === 0 && (
+              <tr><td colSpan={5} style={{textAlign:"center", padding:24, color:"var(--text-muted)"}}>Sin colaboradores registrados</td></tr>
+            )}
+            {colabs && colabs.map((c) => {
+              const name = c.name || "—";
+              const initials2 = name.split(" ").map(p => p[0]).slice(0,2).join("").toUpperCase();
+              const txCount = c.txCount ?? "—";
+              const active = (c.status || 'active') === 'active';
               return (
-                <tr key={i}>
+                <tr key={c.id}>
                   <td>
                     <div className="row" style={{gap:10}}>
                       <span className="avatar">{initials2}</span>
                       <div style={{fontWeight:500}}>{name}</div>
                     </div>
                   </td>
-                  <td className="mono tiny" style={{color:"var(--text-muted)"}}>{comisionLabel(name)}</td>
+                  <td className="mono tiny" style={{color:"var(--text-muted)"}}>{pctLabel(c)}</td>
                   <td className="num">{txCount}</td>
-                  <td><span className="badge green"><span style={{width:5,height:5,borderRadius:"50%",background:"currentColor"}}/> Activo</span></td>
+                  <td>
+                    {active
+                      ? <span className="badge green"><span style={{width:5,height:5,borderRadius:"50%",background:"currentColor"}}/> Activo</span>
+                      : <span className="badge" style={{opacity:0.5}}>Inactivo</span>
+                    }
+                  </td>
+                  <td style={{width:40, textAlign:"right"}}>
+                    <button className="btn ghost icon" onClick={() => openEdit(c)} title="Editar" style={{fontSize:13}}>
+                      ✎
+                    </button>
+                  </td>
                 </tr>
               );
             })}
@@ -161,6 +239,84 @@ function Settings({ user }) {
           <window.I.Logout width="13" height="13"/> Cerrar sesión
         </button>
       </div>
+
+      {/* Modal crear / editar */}
+      {modal && (
+        <div style={{
+          position:"fixed", inset:0, background:"rgba(0,0,0,0.5)", backdropFilter:"blur(4px)",
+          display:"flex", alignItems:"center", justifyContent:"center", zIndex:200
+        }}>
+          <div className="card" style={{width:"100%", maxWidth:420, padding:24, margin:16}}>
+            <div className="row between" style={{marginBottom:18}}>
+              <div style={{fontWeight:600, fontSize:15}}>
+                {modal.mode === 'create' ? 'Nuevo colaborador' : 'Editar colaborador'}
+              </div>
+              <button className="btn ghost icon" onClick={closeModal} disabled={saving}>
+                <window.I.X width="14" height="14"/>
+              </button>
+            </div>
+
+            {formError && (
+              <div style={{padding:"10px 12px", color:"var(--danger)", background:"var(--danger-dim)", borderRadius:"var(--radius-sm)", marginBottom:14, fontSize:13}}>
+                {formError}
+              </div>
+            )}
+
+            <div style={{display:"flex", flexDirection:"column", gap:14}}>
+              <div>
+                <label className="muted tiny" style={{display:"block", marginBottom:5}}>Nombre *</label>
+                <input
+                  className="input"
+                  value={form.name}
+                  onChange={e => setForm(f => ({...f, name: e.target.value}))}
+                  placeholder="Ej: Patty Acosta"
+                  disabled={saving}
+                />
+              </div>
+
+              <div>
+                <label className="muted tiny" style={{display:"block", marginBottom:5}}>
+                  Comisión base (%) — dejar vacío para override por mensaje
+                </label>
+                <input
+                  className="input"
+                  type="number"
+                  min="0" max="100" step="0.1"
+                  value={form.basePct}
+                  onChange={e => setForm(f => ({...f, basePct: e.target.value}))}
+                  placeholder="Ej: 5"
+                  disabled={saving}
+                />
+              </div>
+
+              <div>
+                <label className="muted tiny" style={{display:"block", marginBottom:5}}>Estado</label>
+                <select
+                  className="input"
+                  value={form.status}
+                  onChange={e => setForm(f => ({...f, status: e.target.value}))}
+                  disabled={saving}
+                >
+                  <option value="active">Activo</option>
+                  <option value="inactive">Inactivo</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="row" style={{gap:8, marginTop:20, justifyContent:"flex-end"}}>
+              {modal.mode === 'edit' && (
+                <button className="btn ghost" style={{color:"var(--danger)", marginRight:"auto"}} onClick={handleDelete} disabled={saving}>
+                  <window.I.Trash2 width="13" height="13"/> Eliminar
+                </button>
+              )}
+              <button className="btn ghost" onClick={closeModal} disabled={saving}>Cancelar</button>
+              <button className="btn" onClick={handleSave} disabled={saving}>
+                {saving ? 'Guardando…' : 'Guardar'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

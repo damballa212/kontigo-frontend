@@ -92,6 +92,24 @@ async function fetchCollaborators() {
   return apiJSON("/collaborators");
 }
 
+async function createCollaborator({ name, basePct, status }) {
+  return apiJSON("/collaborators", {
+    method: "POST",
+    body: JSON.stringify({ name, basePct: basePct ?? null, status: status ?? "active" }),
+  });
+}
+
+async function updateCollaborator(id, { name, basePct, status }) {
+  return apiJSON(`/collaborators/${id}`, {
+    method: "PUT",
+    body: JSON.stringify({ name, basePct: basePct ?? null, status }),
+  });
+}
+
+async function deleteCollaborator(id) {
+  await apiFetch(`/collaborators/${id}`, { method: "DELETE" });
+}
+
 async function fetchExportPreview({ startDate, endDate, colaborador, cliente, minAmount, maxAmount } = {}) {
   const params = new URLSearchParams();
   if (startDate) params.set("startDate", startDate);
@@ -204,7 +222,8 @@ window.KONTIGO = {
   fmtUSD, fmtGs, fmtNum, fmtDate, colabBy,
   COLABS: COLABS_REF,
   // API
-  fetchDashboard, fetchTransactions, fetchRates, fetchCollaborators,
+  fetchDashboard, fetchTransactions, fetchRates,
+  fetchCollaborators, createCollaborator, updateCollaborator, deleteCollaborator,
   fetchWebhookMessages, fetchWebhookMessage,
   fetchExportPreview, fetchExportPresets, saveExportPreset, deleteExportPreset,
   downloadExport, mapTransaction, deleteTransaction,
