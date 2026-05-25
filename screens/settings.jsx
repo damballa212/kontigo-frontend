@@ -144,8 +144,8 @@ function Settings({ user }) {
           <div style={{display:"flex", flexDirection:"column", gap:10}}>
             {[
               ["#TRANSACCION", "Registrar una nueva transacción"],
-              ["#TASA", "Actualizar la tasa USD → Gs"],
-              ["#AYUDA", "Listado de comandos"],
+              ["#TASA",        "Actualizar la tasa USD → Gs"],
+              ["#AYUDA",       "Ver todos los formatos"],
             ].map(([cmd, desc]) => (
               <div key={cmd} className="row between" style={{padding:"10px 12px", background:"var(--bg-soft)", borderRadius:"var(--radius-sm)", border:"1px solid var(--border)"}}>
                 <span className="mono" style={{fontWeight:500, fontSize:13}}>{cmd}</span>
