@@ -26,18 +26,19 @@ describe('mobile layout safeguards', () => {
     expect(css).toMatch(/@media\s*\(max-width:\s*900px\)[\s\S]*\.desktop-only\s*\{[^}]*display:\s*none!important/)
   })
 
-  it('renders mobile cards for collaborators instead of only a wide table', () => {
+  it('keeps collaborators as a compact mobile table instead of cards', () => {
     const settings = read('screens/settings.jsx')
-    expect(settings).toContain('collaborator-mobile-list')
-    expect(settings).toContain('collaborator-card')
-    expect(settings).toContain('desktop-only')
+    expect(settings).toContain('collaborators-table')
+    expect(settings).not.toContain('collaborator-mobile-list')
+    expect(settings).not.toContain('collaborator-card')
   })
 
-  it('renders mobile cards for transactions instead of only a wide table', () => {
+  it('keeps transactions as a compact mobile table with priority columns', () => {
     const transactions = read('screens/transactions.jsx')
-    expect(transactions).toContain('tx-mobile-list')
-    expect(transactions).toContain('tx-mobile-card')
-    expect(transactions).toContain('desktop-only')
+    expect(transactions).toContain('transactions-table')
+    expect(transactions).toContain('optional-col')
+    expect(transactions).not.toContain('tx-mobile-list')
+    expect(transactions).not.toContain('tx-mobile-card')
   })
 
   it('uses responsive report classes instead of fixed inline desktop layouts', () => {

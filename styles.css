@@ -160,8 +160,7 @@ body {
 .field,
 .row > * { min-width: 0; }
 .desktop-only { display: block; }
-.mobile-only,
-.mobile-card-list { display: none; }
+.mobile-only { display: none; }
 
 /* ===== Components ===== */
 .card {
@@ -487,70 +486,15 @@ body {
 /* Two-column split layout (1.3fr / 1fr) — stackeable en mobile */
 .grid-split { grid-template-columns: 1.3fr 1fr; }
 
-/* Mobile-native list alternatives */
-.collaborator-mobile-list,
-.tx-mobile-list {
-  flex-direction: column;
-  gap: 10px;
+/* Compact mobile tables */
+.transactions-table,
+.collaborators-table {
+  table-layout: auto;
 }
-.collaborator-card,
-.tx-mobile-card {
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  background: var(--surface);
-  color: var(--text);
-  font: inherit;
-  padding: 14px;
-  width: 100%;
-}
-.collaborator-card-head,
-.tx-mobile-head {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 12px;
-}
-.collaborator-card-person,
-.tx-mobile-person {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  min-width: 0;
-}
-.collaborator-card-name,
-.tx-mobile-name {
-  font-size: 14px;
-  font-weight: 600;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.collaborator-card-stats,
-.tx-mobile-stats {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
-  margin-top: 14px;
-}
-.mobile-stat {
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  background: var(--bg-soft);
-  padding: 10px;
-  min-width: 0;
-}
-.mobile-stat span,
-.mobile-stat strong {
-  display: block;
-}
-.mobile-stat strong {
-  margin-top: 4px;
-  font-size: 13px;
+.transactions-table .tx-col-client,
+.transactions-table .tx-col-collab,
+.collaborators-table td:first-child {
   overflow-wrap: anywhere;
-}
-.tx-mobile-amount {
-  font-size: 18px;
-  font-weight: 600;
-  text-align: right;
 }
 
 /* Reports */
@@ -603,7 +547,6 @@ body {
   .panel { width: 100vw; }
   .desktop-only { display: none!important; }
   .mobile-only { display: block!important; }
-  .mobile-card-list { display: flex!important; }
   .card-header { gap: 12px; align-items: flex-start; }
   .card-header .btn { flex-shrink: 0; }
   .input,
@@ -635,8 +578,60 @@ body {
   .pagination { flex-wrap: wrap; gap: 8px; }
   .kv { gap: 12px; align-items: flex-start; }
   .kv-val { text-align: right; overflow-wrap: anywhere; }
-  .collaborator-card-stats,
-  .tx-mobile-stats { grid-template-columns: 1fr 1fr; }
+  .transactions-table,
+  .collaborators-table {
+    table-layout: fixed;
+    min-width: 0;
+  }
+  .transactions-table th,
+  .transactions-table td,
+  .collaborators-table th,
+  .collaborators-table td {
+    padding: 12px 8px;
+    font-size: 12.5px;
+    vertical-align: middle;
+  }
+  .transactions-table th,
+  .collaborators-table th {
+    font-size: 10.5px;
+    letter-spacing: 0.06em;
+  }
+  .transactions-table .optional-col,
+  .collaborators-table .optional-col {
+    display: none;
+  }
+  .transactions-table .tx-col-date { width: 24%; }
+  .transactions-table .tx-col-client { width: 24%; }
+  .transactions-table .tx-col-collab { width: 28%; }
+  .transactions-table .tx-col-usd { width: 24%; }
+  .transactions-table .avatar,
+  .collaborators-table .avatar {
+    width: 24px;
+    height: 24px;
+    font-size: 10px;
+    flex-shrink: 0;
+  }
+  .transactions-table .row,
+  .collaborators-table .row {
+    gap: 6px!important;
+  }
+  .transactions-table .num,
+  .collaborators-table .num {
+    white-space: nowrap;
+  }
+  .transactions-table .badge,
+  .collaborators-table .badge {
+    padding: 2px 7px;
+    font-size: 10.5px;
+  }
+  .collaborators-table th:nth-child(1),
+  .collaborators-table td:nth-child(1) { width: 36%; }
+  .collaborators-table th:nth-child(2),
+  .collaborators-table td:nth-child(2) { width: 26%; }
+  .collaborators-table th:nth-child(3),
+  .collaborators-table td:nth-child(3) { width: 18%; }
+  .collaborators-table th:nth-child(4),
+  .collaborators-table td:nth-child(4) { width: 20%; }
   .reports-field-grid,
   .reports-format-grid { grid-template-columns: 1fr; }
   .reports-column-header,

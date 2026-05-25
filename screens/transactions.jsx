@@ -251,17 +251,17 @@ function Transactions() {
 
       {/* Tabla */}
       <div className="card flush">
-        <div className="table-scroll desktop-only"><table className="table">
+        <div className="table-scroll"><table className="table transactions-table">
           <thead>
             <tr>
-              <th>Fecha</th>
-              <th>Cliente</th>
-              <th>Colaborador</th>
-              <th className="num">USD Total</th>
-              <th className="num">Com.</th>
-              <th className="num">USD Neto</th>
-              <th className="num">Monto Gs</th>
-              <th className="num">Tasa</th>
+              <th className="tx-col-date">Fecha</th>
+              <th className="tx-col-client">Cliente</th>
+              <th className="tx-col-collab">Colaborador</th>
+              <th className="num tx-col-usd">USD Total</th>
+              <th className="num optional-col">Com.</th>
+              <th className="num optional-col">USD Neto</th>
+              <th className="num optional-col">Monto Gs</th>
+              <th className="num optional-col">Tasa</th>
             </tr>
           </thead>
           <tbody>
@@ -277,74 +277,27 @@ function Transactions() {
               const initials = name.split(" ").map(p=>p[0]).slice(0,2).join("");
               return (
                 <tr key={t.id} onClick={() => setSelected(t)}>
-                  <td>
+                  <td className="tx-col-date">
                     <div className="mono tnum tiny">{fD(t.fecha)}</div>
                     <div className="muted tiny mono">{new Date(t.fecha).toTimeString().slice(0,5)}</div>
                   </td>
-                  <td style={{fontWeight:500}}>{t.cliente}</td>
-                  <td>
+                  <td className="tx-col-client" style={{fontWeight:500}}>{t.cliente}</td>
+                  <td className="tx-col-collab">
                     <div className="row" style={{gap:8}}>
                       <span className="avatar" style={{width:22,height:22,fontSize:10}}>{initials}</span>
                       <span>{name.split(" ")[0]}</span>
                     </div>
                   </td>
-                  <td className="num">{fU(t.usd, true)}</td>
-                  <td className="num"><span className="badge gold">{t.comPct}%</span></td>
-                  <td className="num">{fU(t.neto, true)}</td>
-                  <td className="num">{fG(t.gs)} <span className="muted">Gs</span></td>
-                  <td className="num muted">{Number(t.tasa).toLocaleString("es-PY").replaceAll(",",".")}</td>
+                  <td className="num tx-col-usd">{fU(t.usd, true)}</td>
+                  <td className="num optional-col"><span className="badge gold">{t.comPct}%</span></td>
+                  <td className="num optional-col">{fU(t.neto, true)}</td>
+                  <td className="num optional-col">{fG(t.gs)} <span className="muted">Gs</span></td>
+                  <td className="num muted optional-col">{Number(t.tasa).toLocaleString("es-PY").replaceAll(",",".")}</td>
                 </tr>
               );
             })}
           </tbody>
         </table></div>
-        <div className="mobile-card-list tx-mobile-list">
-          {loading && (
-            <div className="muted tiny" style={{textAlign:"center", padding:24}}>Cargando…</div>
-          )}
-          {!loading && txs.length === 0 && (
-            <div className="muted tiny" style={{textAlign:"center", padding:24}}>Sin resultados</div>
-          )}
-          {!loading && txs.map(t => {
-            const colab = cBy(t.colab);
-            const name = t.colabName || colab.name;
-            const initials = name.split(" ").map(p=>p[0]).slice(0,2).join("");
-            return (
-              <button key={t.id} className="tx-mobile-card" onClick={() => setSelected(t)} style={{textAlign:"left", color:"inherit", cursor:"pointer"}}>
-                <div className="tx-mobile-head">
-                  <div>
-                    <div className="mono tnum tiny">{fD(t.fecha)} · {new Date(t.fecha).toTimeString().slice(0,5)}</div>
-                    <div className="tx-mobile-name" style={{marginTop:4}}>{t.cliente}</div>
-                  </div>
-                  <div className="tx-mobile-amount mono">{fU(t.usd, true)}</div>
-                </div>
-                <div className="tx-mobile-stats">
-                  <div className="mobile-stat">
-                    <span className="muted tiny">Colaborador</span>
-                    <strong>
-                      <span className="row" style={{gap:8}}>
-                        <span className="avatar" style={{width:22,height:22,fontSize:10}}>{initials}</span>
-                        <span>{name}</span>
-                      </span>
-                    </strong>
-                  </div>
-                  <div className="mobile-stat">
-                    <span className="muted tiny">Comisión</span>
-                    <strong><span className="badge gold">{t.comPct}%</span></strong>
-                  </div>
-                  <div className="mobile-stat">
-                    <span className="muted tiny">USD neto</span>
-                    <strong className="mono">{fU(t.neto, true)}</strong>
-                  </div>
-                  <div className="mobile-stat">
-                    <span className="muted tiny">Monto Gs</span>
-                    <strong className="mono">{fG(t.gs)} Gs</strong>
-                  </div>
-                </div>
-              </button>
-            );
-          })}
-        </div>
         {pagination && pagination.totalPages > 1 && (
           <div className="pagination">
             <span>Página {pagination.page} de {pagination.totalPages} · {pagination.limit} por página</span>
