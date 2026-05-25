@@ -471,6 +471,12 @@ body {
 }
 .rate-display .small { font-size: 18px; color: var(--text-muted); }
 
+/* Scrollable table wrapper */
+.table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+/* Two-column split layout (1.3fr / 1fr) — stackeable en mobile */
+.grid-split { grid-template-columns: 1.3fr 1fr; }
+
 /* Responsive */
 @media (max-width: 900px) {
   .app { grid-template-columns: 1fr; }
@@ -478,11 +484,23 @@ body {
   .grid-4 { grid-template-columns: repeat(2, 1fr); }
   .grid-3 { grid-template-columns: 1fr; }
   .grid-2 { grid-template-columns: 1fr; }
+  .grid-split { grid-template-columns: 1fr; }
   .login-shell { grid-template-columns: 1fr; }
   .login-art { display: none; }
   .content { padding: 16px; }
   .topbar { padding: 12px 16px; }
   .panel { width: 100vw; }
+
+  /* Filtros: columna completa en mobile */
+  .filters-row { flex-direction: column !important; align-items: stretch !important; }
+  .filters-row .field { min-width: 0 !important; width: 100%; }
+  .filters-row .field .input,
+  .filters-row .field .select { width: 100%; box-sizing: border-box; }
+  .filters-row > .row { width: 100%; }
+  .filters-row > .row .btn { flex: 1; justify-content: center; }
+
+  /* Paginación: wrap en pantallas pequeñas */
+  .pagination { flex-wrap: wrap; gap: 8px; }
 }
 
 /* Mobile bottom tabs */

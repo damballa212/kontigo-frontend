@@ -198,7 +198,7 @@ function Transactions() {
     <div className="content">
       {/* Filtros */}
       <div className="card" style={{padding:16, marginBottom:18}}>
-        <div className="row wrap" style={{gap:12, alignItems:"flex-end"}}>
+        <div className="row wrap filters-row" style={{gap:12, alignItems:"flex-end"}}>
           <div className="field" style={{minWidth:140}}>
             <label className="field-label">Desde</label>
             <input className="input mono" type="date" value={dateFrom} onChange={e => setDateFrom(e.target.value)}/>
@@ -251,7 +251,7 @@ function Transactions() {
 
       {/* Tabla */}
       <div className="card flush">
-        <table className="table">
+        <div className="table-scroll"><table className="table">
           <thead>
             <tr>
               <th>Fecha</th>
@@ -297,7 +297,7 @@ function Transactions() {
               );
             })}
           </tbody>
-        </table>
+        </table></div>
         {pagination && pagination.totalPages > 1 && (
           <div className="pagination">
             <span>Página {pagination.page} de {pagination.totalPages} · {pagination.limit} por página</span>

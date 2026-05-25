@@ -106,7 +106,7 @@ function Settings({ user }) {
       )}
 
       {/* Tasa actual */}
-      <div className="grid" style={{gridTemplateColumns:"1.2fr 1fr", gap:18, marginBottom:18}}>
+      <div className="grid grid-split" style={{gap:18, marginBottom:18}}>
         <div className="card" style={{padding:24}}>
           <div className="row between" style={{marginBottom:8}}>
             <div className="muted tiny" style={{textTransform:"uppercase", letterSpacing:"0.06em"}}>Tasa actual</div>
@@ -173,7 +173,7 @@ function Settings({ user }) {
             <I.Plus width="13" height="13"/> Nuevo
           </button>
         </div>
-        <table className="table">
+        <div className="table-scroll"><table className="table">
           <thead>
             <tr>
               <th>Nombre</th>
@@ -220,7 +220,7 @@ function Settings({ user }) {
               );
             })}
           </tbody>
-        </table>
+        </table></div>
       </div>
 
       {/* Cuenta */}

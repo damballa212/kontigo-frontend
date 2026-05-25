@@ -114,7 +114,7 @@ function Reports() {
 
   return (
     <div className="content">
-      <div className="grid" style={{gridTemplateColumns:"1.3fr 1fr", gap:18, alignItems:"start"}}>
+      <div className="grid grid-split" style={{gap:18, alignItems:"start"}}>
 
         {/* ── Columna izquierda: configuración ── */}
         <div style={{display:"flex", flexDirection:"column", gap:14}}>
