@@ -1,5 +1,15 @@
 // ===== Kontigo · App shell =====
-const { useTweaks, TweaksPanel, TweakSection, TweakColor, TweakRadio, TweakToggle, TweakSelect } = window;
+import React from 'react'
+import ReactDOM from 'react-dom/client'
+import firebase from './firebase.js'
+import { I } from './icons.jsx'
+import { useTweaks, TweaksPanel, TweakSection, TweakColor, TweakRadio, TweakToggle, TweakSelect } from './tweaks-panel.jsx'
+import Login from './screens/login.jsx'
+import Dashboard from './screens/dashboard.jsx'
+import Transactions from './screens/transactions.jsx'
+import Reports from './screens/reports.jsx'
+import Settings from './screens/settings.jsx'
+import BotWhatsApp from './screens/bot-whatsapp.jsx'
 
 const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
   "accent": ["#4ade80", "#16382a", "#052e17"],
@@ -23,10 +33,10 @@ function ThemeToggle({ theme, setTheme }) {
   return (
     <div className="theme-toggle">
       <button className={theme === "light" ? "active" : ""} onClick={() => setTheme("light")} title="Modo claro">
-        <window.I.Sun width="14" height="14"/>
+        <I.Sun width="14" height="14"/>
       </button>
       <button className={theme === "dark" ? "active" : ""} onClick={() => setTheme("dark")} title="Modo oscuro">
-        <window.I.Moon width="14" height="14"/>
+        <I.Moon width="14" height="14"/>
       </button>
     </div>
   );
@@ -34,11 +44,11 @@ function ThemeToggle({ theme, setTheme }) {
 
 function Sidebar({ screen, setScreen, onLogout, user }) {
   const items = [
-    { id: "dashboard",    label: "Dashboard",    icon: window.I.Dashboard },
-    { id: "transactions", label: "Transacciones", icon: window.I.List },
-    { id: "reports",      label: "Reportes",      icon: window.I.Report },
-    { id: "settings",     label: "Configuración", icon: window.I.Settings },
-    { id: "bot",          label: "Bot WhatsApp",  icon: window.I.WhatsApp },
+    { id: "dashboard",    label: "Dashboard",    icon: I.Dashboard },
+    { id: "transactions", label: "Transacciones", icon: I.List },
+    { id: "reports",      label: "Reportes",      icon: I.Report },
+    { id: "settings",     label: "Configuración", icon: I.Settings },
+    { id: "bot",          label: "Bot WhatsApp",  icon: I.WhatsApp },
   ];
 
   const displayName = user?.displayName || "Usuario";
@@ -79,7 +89,7 @@ function Sidebar({ screen, setScreen, onLogout, user }) {
             <div className="user-role">{user?.email || ""}</div>
           </div>
           <button className="btn ghost icon" onClick={onLogout} title="Cerrar sesión">
-            <window.I.Logout width="14" height="14"/>
+            <I.Logout width="14" height="14"/>
           </button>
         </div>
       </div>
@@ -89,11 +99,11 @@ function Sidebar({ screen, setScreen, onLogout, user }) {
 
 function MobileTabs({ screen, setScreen }) {
   const items = [
-    { id: "dashboard",    label: "Inicio",   icon: window.I.Dashboard },
-    { id: "transactions", label: "Movs",     icon: window.I.List },
-    { id: "reports",      label: "Reportes", icon: window.I.Report },
-    { id: "bot",          label: "Bot",      icon: window.I.WhatsApp },
-    { id: "settings",     label: "Config",   icon: window.I.Settings },
+    { id: "dashboard",    label: "Inicio",   icon: I.Dashboard },
+    { id: "transactions", label: "Movs",     icon: I.List },
+    { id: "reports",      label: "Reportes", icon: I.Report },
+    { id: "bot",          label: "Bot",      icon: I.WhatsApp },
+    { id: "settings",     label: "Config",   icon: I.Settings },
   ];
   return (
     <div className="mobile-tabs">
@@ -127,8 +137,8 @@ function ToastContainer() {
     <div style={{position:"fixed", bottom:24, right:24, zIndex:200, display:"flex", flexDirection:"column", gap:8}}>
       {toasts.map(t => (
         <div key={t.id} className={`toast toast-${t.type}`}>
-          {t.type === "success" && <window.I.Check width="14" height="14"/>}
-          {t.type === "error"   && <window.I.X    width="14" height="14"/>}
+          {t.type === "success" && <I.Check width="14" height="14"/>}
+          {t.type === "error"   && <I.X    width="14" height="14"/>}
           <span>{t.message}</span>
         </div>
       ))}
@@ -139,12 +149,10 @@ function ToastContainer() {
 function App() {
   const [tweaks, setTweak] = useTweaks(TWEAK_DEFAULTS);
   const [theme, setTheme] = React.useState(() => localStorage.getItem("kontigo-theme") || "dark");
-  // null = cargando, false = no autenticado, objeto = usuario Firebase
   const [user, setUser] = React.useState(null);
   const [authReady, setAuthReady] = React.useState(false);
   const [screen, setScreen] = React.useState(tweaks.startScreen || "dashboard");
 
-  // Escucha cambios de auth de Firebase
   React.useEffect(() => {
     const unsub = firebase.auth().onAuthStateChanged(u => {
       setUser(u || false);
@@ -177,7 +185,6 @@ function App() {
     settings:     { t: "Configuración",   s: "Tasas, colaboradores y cuenta" },
   };
 
-  // Pantalla de carga mientras Firebase verifica la sesión
   if (!authReady) {
     return (
       <div style={{display:"flex", alignItems:"center", justifyContent:"center", minHeight:"100vh", flexDirection:"column", gap:16}}>
@@ -190,7 +197,7 @@ function App() {
   if (!user) {
     return (
       <>
-        <window.Login onEnter={() => {}}/>
+        <Login onEnter={() => {}}/>
         <TweaksPanel title="Tweaks">
           <TweakSection label="Tema">
             <TweakRadio label="Modo" value={theme} onChange={v => setTheme(v)} options={[{value:"dark", label:"Oscuro"},{value:"light", label:"Claro"}]}/>
@@ -204,11 +211,11 @@ function App() {
   }
 
   const Screen = {
-    dashboard:    window.Dashboard,
-    transactions: window.Transactions,
-    reports:      window.Reports,
-    bot:          window.BotWhatsApp,
-    settings:     window.Settings,
+    dashboard:    Dashboard,
+    transactions: Transactions,
+    reports:      Reports,
+    bot:          BotWhatsApp,
+    settings:     Settings,
   }[screen];
 
   const title = titles[screen];

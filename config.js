@@ -5,7 +5,7 @@
 // 3. Cambia API_BASE_URL por el dominio real de tu backend cuando lo despliegues
 //    (por ejemplo: "https://api.tudominio.com")
 
-const FIREBASE_CONFIG = {
+export const FIREBASE_CONFIG = {
   apiKey: "AIzaSyAXH20HY1VDhyLTmohMsKp4n6utSeUEn98",
   authDomain: "kapital-app-prod.firebaseapp.com",
   projectId: "kapital-app-prod",
@@ -17,6 +17,4 @@ const FIREBASE_CONFIG = {
 // URL base del backend (sin slash al final)
 // En desarrollo local: "http://localhost:3000"
 // En producción: "https://tu-backend.tudominio.com"
-const API_BASE_URL = "https://kontigo-backend.76-13-161-248.nip.io";
-
-window.KONTIGO_CONFIG = { FIREBASE_CONFIG, API_BASE_URL };
+export const API_BASE_URL = "https://kontigo-backend.76-13-161-248.nip.io";

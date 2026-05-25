@@ -1,4 +1,8 @@
 // ===== Kontigo · Login screen =====
+import React from 'react'
+import firebase from '../firebase.js'
+import { I } from '../icons.jsx'
+
 function Login({ onEnter }) {
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
@@ -90,7 +94,7 @@ function Login({ onEnter }) {
 
           <button className="btn" onClick={loginWithGoogle} disabled={loading}
             style={{justifyContent:"center", padding:"10px 14px", fontSize:14, gap:10, opacity: loading ? 0.7 : 1}}>
-            <window.I.Google width="16" height="16"/> Continuar con Google
+            <I.Google width="16" height="16"/> Continuar con Google
           </button>
 
           <div className="row" style={{gap:12, color:"var(--text-dim)"}}>
@@ -128,4 +132,4 @@ function Login({ onEnter }) {
   );
 }
 
-window.Login = Login;
+export default Login

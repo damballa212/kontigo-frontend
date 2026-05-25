@@ -1,5 +1,7 @@
 // ===== Kapital · Transactions screen =====
-const { fetchTransactions, mapTransaction, deleteTransaction, fmtUSD: fU, fmtGs: fG, fmtDate: fD, colabBy: cBy, COLABS } = window.KONTIGO;
+import React from 'react'
+import { I } from '../icons.jsx'
+import { fetchTransactions, mapTransaction, deleteTransaction, fmtUSD as fU, fmtGs as fG, fmtDate as fD, colabBy as cBy, COLABS } from '../api.js'
 
 function TxDetail({ tx, onClose, onDelete }) {
   const [confirming, setConfirming] = React.useState(false);
@@ -15,7 +17,7 @@ function TxDetail({ tx, onClose, onDelete }) {
             <div className="muted tiny" style={{textTransform:"uppercase", letterSpacing:"0.06em"}}>Transacción</div>
             <div className="mono" style={{fontSize:16, marginTop:2}}>{tx.id}</div>
           </div>
-          <button className="btn ghost icon" onClick={onClose}><window.I.X width="14" height="14"/></button>
+          <button className="btn ghost icon" onClick={onClose}><I.X width="14" height="14"/></button>
         </div>
         <div className="panel-body">
           <div className="row between" style={{marginBottom:18}}>
@@ -76,7 +78,7 @@ function TxDetail({ tx, onClose, onDelete }) {
           <div style={{marginTop:28, paddingTop:16, borderTop:"1px solid var(--border)"}}>
             <button className="btn ghost" style={{color:"var(--danger)", width:"100%", justifyContent:"center"}}
               onClick={() => setConfirming(true)}>
-              <window.I.Trash2 width="13" height="13"/> Eliminar transacción
+              <I.Trash2 width="13" height="13"/> Eliminar transacción
             </button>
           </div>
         </div>
@@ -87,7 +89,7 @@ function TxDetail({ tx, onClose, onDelete }) {
         <div className="dialog-overlay" onClick={() => !deleting && setConfirming(false)}>
           <div className="dialog" onClick={e => e.stopPropagation()}>
             <div className="dialog-icon" style={{background:"var(--danger-dim)"}}>
-              <window.I.Trash2 width="20" height="20" style={{color:"var(--danger)"}}/>
+              <I.Trash2 width="20" height="20" style={{color:"var(--danger)"}}/>
             </div>
             <div className="dialog-title">Eliminar transacción</div>
             <div className="dialog-desc">
@@ -139,7 +141,6 @@ function Transactions() {
   const [result, setResult] = React.useState(null);
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState(null);
-  // búsqueda aplicada (separada de los inputs para que solo busque al hacer click)
   const [applied, setApplied] = React.useState({ dateFrom, dateTo, colabFilter, clientQ, page: 1 });
 
   function applySearch() {
@@ -216,7 +217,7 @@ function Transactions() {
           <div className="field" style={{flex:1, minWidth:180}}>
             <label className="field-label">Cliente</label>
             <div className="input" style={{padding:0}}>
-              <span style={{paddingLeft:10, display:"flex", alignItems:"center", color:"var(--text-dim)"}}><window.I.Search width="13" height="13"/></span>
+              <span style={{paddingLeft:10, display:"flex", alignItems:"center", color:"var(--text-dim)"}}><I.Search width="13" height="13"/></span>
               <input value={clientQ} onChange={e => setClientQ(e.target.value)}
                 onKeyDown={e => e.key === "Enter" && applySearch()}
                 placeholder="Buscar por nombre…"
@@ -224,7 +225,7 @@ function Transactions() {
             </div>
           </div>
           <div className="row" style={{gap:8}}>
-            <button className="btn primary" onClick={applySearch}><window.I.Search width="13" height="13"/> Buscar</button>
+            <button className="btn primary" onClick={applySearch}><I.Search width="13" height="13"/> Buscar</button>
             <button className="btn ghost" onClick={clearFilters}>Limpiar</button>
           </div>
         </div>
@@ -313,4 +314,4 @@ function Transactions() {
   );
 }
 
-window.Transactions = Transactions;
+export default Transactions

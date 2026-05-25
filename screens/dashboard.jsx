@@ -1,6 +1,7 @@
 // ===== Kontigo · Dashboard screen =====
-const { I } = window;
-const { fmtUSD, fmtGs, fmtNum, fmtDate, fetchDashboard } = window.KONTIGO;
+import React from 'react'
+import { I } from '../icons.jsx'
+import { fmtUSD, fmtGs, fmtNum, fmtDate, fetchDashboard } from '../api.js'
 
 function Metric({ label, value, unit, sub, tone, deltaUp }) {
   return (
@@ -210,4 +211,4 @@ function Dashboard() {
   );
 }
 
-window.Dashboard = Dashboard;
+export default Dashboard

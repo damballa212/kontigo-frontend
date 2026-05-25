@@ -1,17 +1,18 @@
 // ===== Kontigo · API client + format helpers =====
-(function() {
+import firebase from './firebase.js'
+import { API_BASE_URL } from './config.js'
 
-// ── Format helpers (idénticos al Stitch) ──────────────────────────────────────
-function fmtUSD(n, sign = true) {
+// ── Format helpers ────────────────────────────────────────────────────────────
+export function fmtUSD(n, sign = true) {
   if (n == null) return "—";
   return (sign ? "$" : "") + Number(n).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
-function fmtGs(n) {
+export function fmtGs(n) {
   if (n == null) return "—";
   return Number(n).toLocaleString("es-PY").replaceAll(",", ".");
 }
-function fmtNum(n) { return Number(n).toLocaleString("en-US"); }
-function fmtDate(iso, withTime = false) {
+export function fmtNum(n) { return Number(n).toLocaleString("en-US"); }
+export function fmtDate(iso, withTime = false) {
   const d = new Date(iso);
   const dd = String(d.getDate()).padStart(2, "0");
   const mm = String(d.getMonth() + 1).padStart(2, "0");
@@ -32,8 +33,7 @@ async function getToken() {
 // ── Fetch wrapper ─────────────────────────────────────────────────────────────
 async function apiFetch(path, opts = {}) {
   const token = await getToken();
-  const base = window.KONTIGO_CONFIG.API_BASE_URL;
-  const res = await fetch(`${base}${path}`, {
+  const res = await fetch(`${API_BASE_URL}${path}`, {
     ...opts,
     headers: {
       "Authorization": `Bearer ${token}`,
@@ -54,14 +54,14 @@ async function apiJSON(path, opts) {
 }
 
 // ── API calls ─────────────────────────────────────────────────────────────────
-async function fetchDashboard(year, month) {
+export async function fetchDashboard(year, month) {
   const params = new URLSearchParams();
   if (year) params.set("year", year);
   if (month) params.set("month", month);
   return apiJSON(`/dashboard?${params}`);
 }
 
-async function fetchTransactions({ page = 1, limit = 50, startDate, endDate, colaborador, cliente } = {}) {
+export async function fetchTransactions({ page = 1, limit = 50, startDate, endDate, colaborador, cliente } = {}) {
   const params = new URLSearchParams({ page, limit });
   if (startDate) params.set("startDate", startDate);
   if (endDate) params.set("endDate", endDate);
@@ -70,7 +70,7 @@ async function fetchTransactions({ page = 1, limit = 50, startDate, endDate, col
   return apiJSON(`/transactions?${params}`);
 }
 
-async function fetchWebhookMessages({ page = 1, limit = 50, startDate, endDate, status, parsedType, q } = {}) {
+export async function fetchWebhookMessages({ page = 1, limit = 50, startDate, endDate, status, parsedType, q } = {}) {
   const params = new URLSearchParams({ page, limit });
   if (startDate) params.set("startDate", startDate);
   if (endDate) params.set("endDate", endDate);
@@ -80,37 +80,37 @@ async function fetchWebhookMessages({ page = 1, limit = 50, startDate, endDate, 
   return apiJSON(`/webhook/messages?${params}`);
 }
 
-async function fetchWebhookMessage(id) {
+export async function fetchWebhookMessage(id) {
   return apiJSON(`/webhook/messages/${id}`);
 }
 
-async function fetchRates() {
+export async function fetchRates() {
   return apiJSON("/rates/current");
 }
 
-async function fetchCollaborators() {
+export async function fetchCollaborators() {
   return apiJSON("/collaborators");
 }
 
-async function createCollaborator({ name, basePct, status }) {
+export async function createCollaborator({ name, basePct, status }) {
   return apiJSON("/collaborators", {
     method: "POST",
     body: JSON.stringify({ name, basePct: basePct ?? null, status: status ?? "active" }),
   });
 }
 
-async function updateCollaborator(id, { name, basePct, status }) {
+export async function updateCollaborator(id, { name, basePct, status }) {
   return apiJSON(`/collaborators/${id}`, {
     method: "PUT",
     body: JSON.stringify({ name, basePct: basePct ?? null, status }),
   });
 }
 
-async function deleteCollaborator(id) {
+export async function deleteCollaborator(id) {
   await apiFetch(`/collaborators/${id}`, { method: "DELETE" });
 }
 
-async function fetchExportPreview({ startDate, endDate, colaborador, cliente, minAmount, maxAmount } = {}) {
+export async function fetchExportPreview({ startDate, endDate, colaborador, cliente, minAmount, maxAmount } = {}) {
   const params = new URLSearchParams();
   if (startDate) params.set("startDate", startDate);
   if (endDate)   params.set("endDate", endDate);
@@ -121,41 +121,30 @@ async function fetchExportPreview({ startDate, endDate, colaborador, cliente, mi
   return apiJSON(`/export/preview?${params}`);
 }
 
-async function fetchExportPresets() {
+export async function fetchExportPresets() {
   return apiJSON("/export/presets");
 }
 
-async function saveExportPreset(name, config) {
+export async function saveExportPreset(name, config) {
   return apiJSON("/export/presets", {
     method: "POST",
     body: JSON.stringify({ name, config }),
   });
 }
 
-async function deleteExportPreset(id) {
-  const token = await getToken();
-  const base = window.KONTIGO_CONFIG.API_BASE_URL;
-  await fetch(`${base}/export/presets/${id}`, {
-    method: "DELETE",
-    headers: { "Authorization": `Bearer ${token}` },
-  });
+export async function deleteExportPreset(id) {
+  await apiFetch(`/export/presets/${id}`, { method: "DELETE" });
 }
 
-async function deleteTransaction(id) {
-  const token = await getToken();
-  const base = window.KONTIGO_CONFIG.API_BASE_URL;
-  const res = await fetch(`${base}/transactions/${id}`, {
-    method: "DELETE",
-    headers: { "Authorization": `Bearer ${token}` },
-  });
+export async function deleteTransaction(id) {
+  const res = await apiFetch(`/transactions/${id}`, { method: "DELETE" });
   if (!res.ok && res.status !== 204) {
     const msg = await res.text().catch(() => res.statusText);
     throw new Error(`API ${res.status}: ${msg}`);
   }
 }
 
-// Descarga un archivo del backend y dispara la descarga en el browser
-async function downloadExport({ format, startDate, endDate, colaborador, cliente, minAmount, maxAmount, fields }) {
+export async function downloadExport({ format, startDate, endDate, colaborador, cliente, minAmount, maxAmount, fields }) {
   const params = new URLSearchParams({ format });
   if (startDate) params.set("startDate", startDate);
   if (endDate)   params.set("endDate", endDate);
@@ -179,10 +168,8 @@ async function downloadExport({ format, startDate, endDate, colaborador, cliente
   URL.revokeObjectURL(url);
 }
 
-// ── Map backend Transaction → shape usada por el Stitch ───────────────────────
-// El backend devuelve colaborador/cliente como strings, el Stitch usaba IDs.
-// Normalizamos para que el frontend funcione con ambos.
-function mapTransaction(t) {
+// ── Map backend Transaction → shape usada por el frontend ────────────────────
+export function mapTransaction(t) {
   const colabLower = (t.colaborador || "gabriel").toLowerCase();
   let colabId = "gabriel";
   if (colabLower.includes("patty") || colabLower.includes("paty")) colabId = "patty";
@@ -206,27 +193,12 @@ function mapTransaction(t) {
   };
 }
 
-// Colaboradores estáticos de referencia (para labels en dropdown, etc.)
-const COLABS_REF = [
+export const COLABS = [
   { id: "gabriel", name: "Gabriel Zambrano", role: "Dueño",        rate: "—",   initials: "GZ" },
   { id: "patty",   name: "Patty Acosta",     role: "Colaboradora", rate: "5%",  initials: "PA" },
   { id: "anael",   name: "Anael Ríos",       role: "Colaborador",  rate: "2-5%",initials: "AR" },
 ];
 
-function colabBy(id) {
-  return COLABS_REF.find(c => c.id === id) || COLABS_REF[0];
+export function colabBy(id) {
+  return COLABS.find(c => c.id === id) || COLABS[0];
 }
-
-window.KONTIGO = {
-  // helpers de formato
-  fmtUSD, fmtGs, fmtNum, fmtDate, colabBy,
-  COLABS: COLABS_REF,
-  // API
-  fetchDashboard, fetchTransactions, fetchRates,
-  fetchCollaborators, createCollaborator, updateCollaborator, deleteCollaborator,
-  fetchWebhookMessages, fetchWebhookMessage,
-  fetchExportPreview, fetchExportPresets, saveExportPreset, deleteExportPreset,
-  downloadExport, mapTransaction, deleteTransaction,
-};
-
-})();

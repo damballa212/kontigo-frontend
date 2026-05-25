@@ -1,5 +1,7 @@
 // ===== Kontigo · WhatsApp inbox =====
-const { fetchWebhookMessages, fetchWebhookMessage, fmtDate } = window.KONTIGO;
+import React from 'react'
+import { I } from '../icons.jsx'
+import { fetchWebhookMessages, fetchWebhookMessage, fmtDate } from '../api.js'
 
 const STATUS_META = {
   received: { label: "Recibido", tone: "" },
@@ -91,7 +93,7 @@ function InboxDetail({ selected, detail, loading, error }) {
   if (!selected) {
     return (
       <div className="inbox-empty">
-        <window.I.WhatsApp width="28" height="28"/>
+        <I.WhatsApp width="28" height="28"/>
         <div>Seleccioná un mensaje</div>
         <span className="muted tiny">El detalle del flujo aparece aquí.</span>
       </div>
@@ -215,7 +217,7 @@ function BotWhatsApp() {
         <aside className="inbox-list">
           <div className="inbox-toolbar">
             <div className="input inbox-search">
-              <window.I.Search width="13" height="13"/>
+              <I.Search width="13" height="13"/>
               <input
                 value={q}
                 onChange={e => { setQ(e.target.value); setPage(1); }}
@@ -223,7 +225,7 @@ function BotWhatsApp() {
               />
             </div>
             <button className="btn icon" title="Actualizar" onClick={() => setRefreshKey(k => k + 1)}>
-              <window.I.Refresh width="14" height="14"/>
+              <I.Refresh width="14" height="14"/>
             </button>
           </div>
 
@@ -277,4 +279,4 @@ function BotWhatsApp() {
   );
 }
 
-window.BotWhatsApp = BotWhatsApp;
+export default BotWhatsApp

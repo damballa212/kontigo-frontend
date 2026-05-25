@@ -1,9 +1,11 @@
 // ===== Kontigo · Reports screen =====
-const {
-  fmtUSD: fU, fmtGs: fG, fmtDate: fD,
+import React from 'react'
+import { I } from '../icons.jsx'
+import {
+  fmtUSD as fU, fmtGs as fG, fmtDate as fD,
   downloadExport, fetchExportPreview, fetchExportPresets, saveExportPreset, deleteExportPreset,
   COLABS,
-} = window.KONTIGO;
+} from '../api.js'
 
 const ALL_FIELDS = [
   { key: "id",                  label: "ID" },
@@ -28,39 +30,26 @@ function Reports() {
   const today    = new Date().toISOString().split("T")[0];
   const firstDay = today.slice(0,8) + "01";
 
-  // filtros
   const [from,       setFrom]       = React.useState(firstDay);
   const [to,         setTo]         = React.useState(today);
   const [colab,      setColab]      = React.useState("");
   const [cliente,    setCliente]    = React.useState("");
   const [minAmount,  setMinAmount]  = React.useState("");
   const [maxAmount,  setMaxAmount]  = React.useState("");
-
-  // campos seleccionados
   const [fields, setFields] = React.useState(DEFAULT_FIELDS);
-
-  // formato
   const [fmt, setFmt] = React.useState("excel");
-
-  // descarga
   const [loading, setLoading] = React.useState(false);
-
-  // preview real
   const [preview,        setPreview]        = React.useState(null);
   const [previewLoading, setPreviewLoading] = React.useState(false);
-
-  // presets
   const [presets,      setPresets]      = React.useState([]);
   const [saveModal,    setSaveModal]    = React.useState(false);
   const [presetName,   setPresetName]   = React.useState("");
   const [savingPreset, setSavingPreset] = React.useState(false);
 
-  // cargar presets al montar
   React.useEffect(() => {
     fetchExportPresets().then(setPresets).catch(() => {});
   }, []);
 
-  // preview: refrescar cuando cambien los filtros
   React.useEffect(() => {
     setPreviewLoading(true);
     setPreview(null);
@@ -69,7 +58,7 @@ function Reports() {
         .then(setPreview)
         .catch(() => {})
         .finally(() => setPreviewLoading(false));
-    }, 400); // debounce
+    }, 400);
     return () => clearTimeout(t);
   }, [from, to, colab, cliente, minAmount, maxAmount]);
 
@@ -119,7 +108,6 @@ function Reports() {
     setPresets(prev => prev.filter(p => p.id !== id));
   }
 
-  // presets de fecha
   function applyDatePreset(f, t) { setFrom(f); setTo(t); }
   const now = new Date();
   const lm1 = new Date(now.getFullYear(), now.getMonth()-1, 1).toISOString().split("T")[0];
@@ -141,7 +129,6 @@ function Reports() {
         {/* ── Columna izquierda: configuración ── */}
         <div style={{display:"flex", flexDirection:"column", gap:14}}>
 
-          {/* Presets guardados */}
           {presets.length > 0 && (
             <div className="card" style={{padding:16}}>
               <div className="card-title" style={{marginBottom:10, fontSize:13}}>Configuraciones guardadas</div>
@@ -155,7 +142,7 @@ function Reports() {
                     <div className="row" style={{gap:6}}>
                       <button className="btn ghost" style={{padding:"4px 10px", fontSize:12}} onClick={() => applyPreset(p)}>Aplicar</button>
                       <button className="btn ghost" style={{padding:"4px 8px", color:"var(--danger)"}} onClick={() => handleDeletePreset(p.id)}>
-                        <window.I.X width="11" height="11"/>
+                        <I.X width="11" height="11"/>
                       </button>
                     </div>
                   </div>
@@ -164,11 +151,8 @@ function Reports() {
             </div>
           )}
 
-          {/* Filtros */}
           <div className="card" style={{padding:18}}>
             <div className="card-title" style={{fontSize:13, marginBottom:12}}>1 · Filtros</div>
-
-            {/* fechas */}
             <div className="row wrap" style={{gap:6, marginBottom:10}}>
               {datePresets.map(([label, f, t]) => (
                 <button key={label} className={`btn${f===from&&t===to?" primary":""}`}
@@ -186,7 +170,6 @@ function Reports() {
                 <input className="input mono" type="date" value={to} onChange={e=>setTo(e.target.value)}/>
               </div>
             </div>
-
             <div className="grid grid-2" style={{gap:10, marginBottom:12}}>
               <div className="field">
                 <label className="field-label">Colaborador</label>
@@ -200,7 +183,6 @@ function Reports() {
                 <input className="input" type="text" value={cliente} onChange={e=>setCliente(e.target.value)} placeholder="Nombre…"/>
               </div>
             </div>
-
             <div className="grid grid-2" style={{gap:10}}>
               <div className="field">
                 <label className="field-label">Monto mín. USD</label>
@@ -213,7 +195,6 @@ function Reports() {
             </div>
           </div>
 
-          {/* Campos */}
           <div className="card" style={{padding:18}}>
             <div className="row between" style={{marginBottom:10}}>
               <div className="card-title" style={{fontSize:13}}>2 · Columnas a incluir</div>
@@ -233,7 +214,6 @@ function Reports() {
             </div>
           </div>
 
-          {/* Formato y descarga */}
           <div className="card" style={{padding:18}}>
             <div className="card-title" style={{fontSize:13, marginBottom:12}}>3 · Formato</div>
             <div className="row" style={{gap:8, marginBottom:16}}>
@@ -248,14 +228,13 @@ function Reports() {
                 </button>
               ))}
             </div>
-
             <div className="row" style={{gap:8}}>
               <button className="btn primary" onClick={handleDownload} disabled={loading || !fields.length}
                 style={{flex:1, justifyContent:"center", padding:"10px 14px", fontSize:14, opacity: loading ? 0.7 : 1}}>
-                <window.I.Download width="14" height="14"/> {loading ? "Generando…" : "Descargar reporte"}
+                <I.Download width="14" height="14"/> {loading ? "Generando…" : "Descargar reporte"}
               </button>
               <button className="btn" onClick={() => setSaveModal(true)} title="Guardar configuración">
-                <window.I.Settings width="14" height="14"/> Guardar
+                <I.Settings width="14" height="14"/> Guardar
               </button>
             </div>
           </div>
@@ -268,7 +247,7 @@ function Reports() {
               <div className="card-title">Vista previa</div>
               <div className="card-sub">{from.split("-").reverse().join("/")} → {to.split("-").reverse().join("/")}</div>
             </div>
-            <window.I.Receipt width="16" height="16" style={{color:"var(--text-dim)"}}/>
+            <I.Receipt width="16" height="16" style={{color:"var(--text-dim)"}}/>
           </div>
           <div className="card-body">
             {previewLoading && (
@@ -304,14 +283,13 @@ function Reports() {
         </div>
       </div>
 
-      {/* Modal guardar preset */}
       {saveModal && (
         <>
           <div className="panel-overlay" onClick={() => setSaveModal(false)}/>
           <div className="panel" style={{maxWidth:360}}>
             <div className="panel-header">
               <div className="panel-title">Guardar configuración</div>
-              <button className="btn ghost icon" onClick={() => setSaveModal(false)}><window.I.X width="14" height="14"/></button>
+              <button className="btn ghost icon" onClick={() => setSaveModal(false)}><I.X width="14" height="14"/></button>
             </div>
             <div className="panel-body">
               <div className="field" style={{marginBottom:16}}>
@@ -334,4 +312,4 @@ function Reports() {
   );
 }
 
-window.Reports = Reports;
+export default Reports

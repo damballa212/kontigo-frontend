@@ -1,6 +1,10 @@
 // ===== Kontigo · Settings screen =====
+import React from 'react'
+import { I } from '../icons.jsx'
+import firebase from '../firebase.js'
+import { fmtUSD, fetchRates, fetchCollaborators, createCollaborator, updateCollaborator, deleteCollaborator } from '../api.js'
+
 function Settings({ user }) {
-  const { fmtUSD, fetchRates, fetchCollaborators, createCollaborator, updateCollaborator, deleteCollaborator } = window.KONTIGO;
   const [rateData, setRateData] = React.useState(null);
   const [colabs, setColabs] = React.useState(null);
   const [error, setError] = React.useState(null);
@@ -128,7 +132,7 @@ function Settings({ user }) {
           )}
           <div className="card" style={{padding:14, background:"var(--bg-soft)", border:"1px dashed var(--border-strong)"}}>
             <div className="row" style={{gap:10, alignItems:"flex-start"}}>
-              <window.I.WhatsApp width="18" height="18" style={{color:"var(--accent)", flexShrink:0, marginTop:2}}/>
+              <I.WhatsApp width="18" height="18" style={{color:"var(--accent)", flexShrink:0, marginTop:2}}/>
               <div>
                 <div style={{fontWeight:500, marginBottom:4, fontSize:13.5}}>La tasa se actualiza desde WhatsApp</div>
                 <div className="muted tiny">Enviá <span className="mono badge" style={{padding:"1px 6px"}}>#TASA 7350</span> al bot para fijar una nueva tasa. Esta pantalla es solo lectura.</div>
@@ -166,7 +170,7 @@ function Settings({ user }) {
             <div className="card-sub">Personas autorizadas a registrar transacciones</div>
           </div>
           <button className="btn sm" onClick={openCreate} style={{flexShrink:0}}>
-            <window.I.Plus width="13" height="13"/> Nuevo
+            <I.Plus width="13" height="13"/> Nuevo
           </button>
         </div>
         <table className="table">
@@ -238,7 +242,7 @@ function Settings({ user }) {
         <div className="divider"/>
         <button className="btn ghost" style={{color:"var(--danger)"}}
           onClick={() => firebase.auth().signOut()}>
-          <window.I.Logout width="13" height="13"/> Cerrar sesión
+          <I.Logout width="13" height="13"/> Cerrar sesión
         </button>
       </div>
 
@@ -254,7 +258,7 @@ function Settings({ user }) {
                 {modal.mode === 'create' ? 'Nuevo colaborador' : 'Editar colaborador'}
               </div>
               <button className="btn ghost icon" onClick={closeModal} disabled={saving}>
-                <window.I.X width="14" height="14"/>
+                <I.X width="14" height="14"/>
               </button>
             </div>
 
@@ -308,7 +312,7 @@ function Settings({ user }) {
             <div className="row" style={{gap:8, marginTop:20, justifyContent:"flex-end"}}>
               {modal.mode === 'edit' && (
                 <button className="btn ghost" style={{color:"var(--danger)", marginRight:"auto"}} onClick={handleDelete} disabled={saving}>
-                  <window.I.Trash2 width="13" height="13"/> Eliminar
+                  <I.Trash2 width="13" height="13"/> Eliminar
                 </button>
               )}
               <button className="btn ghost" onClick={closeModal} disabled={saving}>Cancelar</button>
@@ -323,4 +327,4 @@ function Settings({ user }) {
   );
 }
 
-window.Settings = Settings;
+export default Settings
